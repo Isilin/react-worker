@@ -1,0 +1,12 @@
+# Ignore artifacts:
+build
+dist
+coverage
+test
+node_modules
+public
+helm
+yarn.lock
+package-lock.json
+Dockerfile
+docker-compose.yml

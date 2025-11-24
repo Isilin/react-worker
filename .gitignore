@@ -1,0 +1,33 @@
+# Yarn 2/3/4 specific folders
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+.yarnrc.yml
+
+# Ignore the standard Node.js folders
+node_modules/
+
+# production
+dist/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# typescript
+*.tsbuildinfo
+
+# IDE - VSCode
+*.code-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Environment files
+.env.*
+.env
+.qodo
