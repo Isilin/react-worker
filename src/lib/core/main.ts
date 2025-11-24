@@ -3,36 +3,33 @@ import type { Inbound, Outbound } from '../types/protocol';
 /**
  * Send a message from worker to main thread
  */
-export function send(message: Outbound): void {
-  self.postMessage(message);
+export function send(worker: string, message: Outbound): void {
+  self.postMessage({ ...message, worker, at: Date.now() });
 }
 
 /**
  * Send ready notification to main thread
  */
-export function sendReady(): void {
-  send({ type: 'READY' });
-}
-
-/**
- * Send pong response to main thread
- */
-export function sendPong(): void {
-  send({ type: 'PONG' });
+export function sendReady(worker: string): void {
+  send(worker, { type: 'READY' });
 }
 
 /**
  * Send echoed result to main thread
  */
-export function sendEchoed(payload: string): void {
-  send({ type: 'ECHOED', payload });
+export function sendEchoed(worker: string, payload: string): void {
+  send(worker, { type: 'ECHOED', payload });
 }
 
 /**
  * Send action result to main thread
  */
-export function sendActed(result: unknown): void {
-  send({ type: 'ACTED', result });
+export function sendActed(worker: string, result: unknown): void {
+  send(worker, { type: 'ACTED', result });
+}
+
+export function sendError(worker: string, reason: string): void {
+  send(worker, { type: 'ERROR', reason });
 }
 
 /**
@@ -58,9 +55,6 @@ export function onMainMessage(handlers: {
 }): () => void {
   return receiveFromMain((msg) => {
     switch (msg.type) {
-      case 'PING':
-        handlers.onPing?.();
-        break;
       case 'ECHO':
         handlers.onEcho?.(msg.payload);
         break;

@@ -30,9 +30,7 @@ export const useWorker = ({
 }: Props): WorkerHook => {
   const worker = useRef<Worker | null>(null);
   const listenersRef = useRef<Set<(event: MessageEvent) => void>>(new Set());
-  const [status, setStatus] = useState<
-    'idle' | 'starting' | 'running' | 'terminating'
-  >('idle');
+  const [status, setStatus] = useState<WorkerStatus>('idle');
 
   const terminate = useCallback(() => {
     setStatus('terminating');
@@ -51,12 +49,21 @@ export const useWorker = ({
       worker.current = new Worker(script, { type: 'module', ...options });
       onMessage((event: MessageEvent) => {
         const data = event.data as Outbound;
-        if (data.type === 'READY') {
-          setStatus('running');
+        switch (data.type) {
+          case 'READY':
+            setStatus('running');
+            break;
+          case 'ERROR':
+            terminate();
+            setStatus('error');
+            break;
+          default:
+            setStatus('warning');
+            break;
         }
       });
       // Attach any pre-registered listeners to the new worker instance
-      listenersRef.current.forEach((handler) => {
+      listenersRef.current.forEach((handler: (event: MessageEvent) => void) => {
         worker.current?.addEventListener('message', handler);
       });
     } catch (error) {
@@ -80,8 +87,7 @@ export const useWorker = ({
 
   // Send message to Worker
   const postMessage = (message: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    worker.current?.postMessage(message as any);
+    worker.current?.postMessage(message);
   };
 
   // On message from Worker

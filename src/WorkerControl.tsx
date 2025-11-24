@@ -36,7 +36,7 @@ export const WorkerControl = ({
       <div className={styles.statusRow}>
         <span className={styles.statusLabel}>Status:</span>
         <span className={`${styles.statusValue} ${styles[status]}`}>
-          {status}
+          {status.toUpperCase()}
         </span>
       </div>
       <div className={styles.buttonsRow}>

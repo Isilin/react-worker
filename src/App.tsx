@@ -75,8 +75,7 @@ const App = () => {
 
   const handleStartEcho = useCallback(() => {
     echoWorker.start();
-    appendOut({ type: 'PING' }, 'echo');
-  }, [echoWorker, appendOut]);
+  }, [echoWorker]);
 
   const handleTerminateEcho = useCallback(() => {
     echoWorker.terminate();
@@ -84,8 +83,7 @@ const App = () => {
 
   const handleStartReverse = useCallback(() => {
     reverseWorker.start();
-    appendOut({ type: 'PING' }, 'reverse');
-  }, [reverseWorker, appendOut]);
+  }, [reverseWorker]);
 
   const handleTerminateReverse = useCallback(() => {
     reverseWorker.terminate();

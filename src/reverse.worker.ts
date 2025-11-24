@@ -1,7 +1,11 @@
 // Reverse worker
 // Receives messages and reverses strings or array contents
 
-self.postMessage({ type: 'READY', worker: 'REVERSE', at: Date.now() });
+import { sendReady } from './lib/core/main';
+
+const WORKER_ID = 'reverse';
+
+sendReady(WORKER_ID);
 
 self.addEventListener('message', (e: MessageEvent) => {
   const data = e.data;
