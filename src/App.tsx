@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import styles from './App.module.css';
 import { useWorker } from './lib/core/worker.hook';
-import type { Inbound } from './lib/types/protocol';
+import type { Inbound, Outbound } from './lib/types/protocol';
+import { LogEntry } from './LogEntry';
 import { WorkerControl } from './WorkerControl';
 
 interface LogEntry {
@@ -12,16 +13,6 @@ interface LogEntry {
   ts: number;
   worker: 'echo' | 'reverse';
 }
-
-const formatTime = (ts: number) => new Date(ts).toLocaleTimeString();
-
-const extractType = (data: unknown): string => {
-  if (data && typeof data === 'object' && 'type' in data) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return String((data as any).type);
-  }
-  return '—';
-};
 
 const App = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -161,24 +152,13 @@ const App = () => {
                 {logs
                   .filter((l) => l.direction === 'out' && l.worker === 'echo')
                   .map((l) => (
-                    <div
+                    <LogEntry
+                      direction={l.direction}
+                      data={l.data as Outbound}
+                      timestamp={l.ts}
+                      background="#172b4d"
                       key={l.id}
-                      className={styles.logItem}
-                      style={{ background: '#172b4d' }}
-                    >
-                      <div className={styles.logMeta}>
-                        <span className={styles.badge}>OUT</span>
-                        <span className={styles.time}>{formatTime(l.ts)}</span>
-                        <span className={styles.type}>
-                          {extractType(l.data)}
-                        </span>
-                      </div>
-                      <pre className={styles.pre}>
-                        {typeof l.data === 'object'
-                          ? JSON.stringify(l.data, null, 2)
-                          : String(l.data)}
-                      </pre>
-                    </div>
+                    />
                   ))}
                 <div ref={bottomRefMainEcho} />
               </div>
@@ -191,24 +171,13 @@ const App = () => {
                 {logs
                   .filter((l) => l.direction === 'in' && l.worker === 'echo')
                   .map((l) => (
-                    <div
+                    <LogEntry
+                      direction={l.direction}
+                      data={l.data as Inbound}
+                      timestamp={l.ts}
+                      background="#0f3d3e"
                       key={l.id}
-                      className={styles.logItem}
-                      style={{ background: '#0f3d3e' }}
-                    >
-                      <div className={styles.logMeta}>
-                        <span className={styles.badge}>IN</span>
-                        <span className={styles.time}>{formatTime(l.ts)}</span>
-                        <span className={styles.type}>
-                          {extractType(l.data)}
-                        </span>
-                      </div>
-                      <pre className={styles.pre}>
-                        {typeof l.data === 'object'
-                          ? JSON.stringify(l.data, null, 2)
-                          : String(l.data)}
-                      </pre>
-                    </div>
+                    />
                   ))}
                 <div ref={bottomRefWorkerEcho} />
               </div>
@@ -229,24 +198,13 @@ const App = () => {
                     (l) => l.direction === 'out' && l.worker === 'reverse',
                   )
                   .map((l) => (
-                    <div
+                    <LogEntry
+                      direction={l.direction}
+                      data={l.data as Outbound}
+                      timestamp={l.ts}
+                      background="#4a1d4d"
                       key={l.id}
-                      className={styles.logItem}
-                      style={{ background: '#4a1d4d' }}
-                    >
-                      <div className={styles.logMeta}>
-                        <span className={styles.badge}>OUT</span>
-                        <span className={styles.time}>{formatTime(l.ts)}</span>
-                        <span className={styles.type}>
-                          {extractType(l.data)}
-                        </span>
-                      </div>
-                      <pre className={styles.pre}>
-                        {typeof l.data === 'object'
-                          ? JSON.stringify(l.data, null, 2)
-                          : String(l.data)}
-                      </pre>
-                    </div>
+                    />
                   ))}
                 <div ref={bottomRefMainReverse} />
               </div>
@@ -259,24 +217,13 @@ const App = () => {
                 {logs
                   .filter((l) => l.direction === 'in' && l.worker === 'reverse')
                   .map((l) => (
-                    <div
+                    <LogEntry
+                      direction={l.direction}
+                      data={l.data as Inbound}
+                      timestamp={l.ts}
+                      background="#3d1f0f"
                       key={l.id}
-                      className={styles.logItem}
-                      style={{ background: '#3d1f0f' }}
-                    >
-                      <div className={styles.logMeta}>
-                        <span className={styles.badge}>IN</span>
-                        <span className={styles.time}>{formatTime(l.ts)}</span>
-                        <span className={styles.type}>
-                          {extractType(l.data)}
-                        </span>
-                      </div>
-                      <pre className={styles.pre}>
-                        {typeof l.data === 'object'
-                          ? JSON.stringify(l.data, null, 2)
-                          : String(l.data)}
-                      </pre>
-                    </div>
+                    />
                   ))}
                 <div ref={bottomRefWorkerReverse} />
               </div>
