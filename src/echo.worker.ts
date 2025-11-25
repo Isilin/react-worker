@@ -1,19 +1,47 @@
 // Simple echo / ping worker
 // Receives messages and responds with structured objects
 
-import { sendError, sendReady } from './lib/core/main';
+import {
+  onMainMessage,
+  sendEchoed,
+  sendHealth,
+  sendLog,
+  sendPong,
+  sendReady,
+  sendTerminated,
+} from './lib/core/main';
 
 const WORKER_ID = 'echo';
 
 sendReady(WORKER_ID);
+sendLog(WORKER_ID, 'info', 'Echo worker initialized');
 
-sendError(WORKER_ID, 'This is a test error message');
+// Simulate health check
+setInterval(() => {
+  const memory = (
+    performance as unknown as { memory?: { usedJSHeapSize: number } }
+  ).memory?.usedJSHeapSize;
+  sendHealth(WORKER_ID, 'healthy', memory);
+}, 5000);
 
-self.addEventListener('message', (e: MessageEvent) => {
-  const data = e.data;
-  if (data && typeof data === 'object' && data.type === 'PING') {
-    self.postMessage({ type: 'PONG', at: Date.now() });
-    return;
-  }
-  self.postMessage({ type: 'ECHO', payload: data, at: Date.now() });
+onMainMessage({
+  onPing: () => {
+    sendPong(WORKER_ID);
+    sendLog(WORKER_ID, 'debug', 'PING received, PONG sent');
+  },
+  onEcho: (payload) => {
+    sendEchoed(WORKER_ID, payload);
+    sendLog(WORKER_ID, 'debug', `Echoed: ${payload}`);
+  },
+  onTerminate: () => {
+    sendLog(WORKER_ID, 'info', 'Terminating echo worker');
+    sendTerminated(WORKER_ID);
+    self.close();
+  },
+  onHealthCheck: () => {
+    const memory = (
+      performance as unknown as { memory?: { usedJSHeapSize: number } }
+    ).memory?.usedJSHeapSize;
+    sendHealth(WORKER_ID, 'healthy', memory);
+  },
 });

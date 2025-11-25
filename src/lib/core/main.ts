@@ -1,4 +1,4 @@
-import type { Inbound, Outbound } from '../types/protocol';
+import type { Inbound, LogLevel, Outbound } from '../types/protocol';
 
 /**
  * Send a message from worker to main thread
@@ -33,6 +33,54 @@ export function sendError(worker: string, reason: string): void {
 }
 
 /**
+ * Send PONG response to main thread
+ */
+export function sendPong(worker: string): void {
+  send(worker, { type: 'PONG' });
+}
+
+/**
+ * Send terminated notification to main thread
+ */
+export function sendTerminated(worker: string): void {
+  send(worker, { type: 'TERMINATED' });
+}
+
+/**
+ * Send health status to main thread
+ */
+export function sendHealth(
+  worker: string,
+  status: 'healthy' | 'degraded',
+  memory?: number,
+): void {
+  send(worker, { type: 'HEALTH', status, memory });
+}
+
+/**
+ * Send progress update to main thread
+ */
+export function sendProgress(
+  worker: string,
+  percent: number,
+  message?: string,
+): void {
+  send(worker, { type: 'PROGRESS', percent, message });
+}
+
+/**
+ * Send log message to main thread
+ */
+export function sendLog(
+  worker: string,
+  level: LogLevel,
+  message: string,
+  data?: unknown,
+): void {
+  send(worker, { type: 'LOG', level, message, data });
+}
+
+/**
  * Subscribe to messages from main thread (inside worker)
  */
 export function receiveFromMain(
@@ -52,6 +100,8 @@ export function onMainMessage(handlers: {
   onPing?: () => void;
   onEcho?: (payload: string) => void;
   onAction?: (payload: unknown) => void;
+  onTerminate?: () => void;
+  onHealthCheck?: () => void;
 }): () => void {
   return receiveFromMain((msg) => {
     switch (msg.type) {
@@ -60,6 +110,15 @@ export function onMainMessage(handlers: {
         break;
       case 'ACTION':
         handlers.onAction?.(msg.payload);
+        break;
+      case 'PING':
+        handlers.onPing?.();
+        break;
+      case 'TERMINATE':
+        handlers.onTerminate?.();
+        break;
+      case 'HEALTH_CHECK':
+        handlers.onHealthCheck?.();
         break;
     }
   });

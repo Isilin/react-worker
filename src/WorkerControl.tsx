@@ -30,9 +30,21 @@ export const WorkerControl = ({
     }
   };
 
+  const handlePing = () => {
+    onSend({ type: 'PING' });
+  };
+
+  const handleHealthCheck = () => {
+    onSend({ type: 'HEALTH_CHECK' });
+  };
+
+  const handleGracefulTerminate = () => {
+    onSend({ type: 'TERMINATE' });
+  };
+
   return (
     <section className={styles.section}>
-      <h2 className={styles.workerTitle}>Echo Worker</h2>
+      <h2 className={styles.workerTitle}>Worker Control</h2>
       <div className={styles.statusRow}>
         <span className={styles.statusLabel}>Status:</span>
         <span className={`${styles.statusValue} ${styles[status]}`}>
@@ -52,7 +64,30 @@ export const WorkerControl = ({
           onClick={onTerminate}
           disabled={status !== 'running'}
         >
-          Terminate
+          Force Kill
+        </button>
+      </div>
+      <div className={styles.buttonsRow}>
+        <button
+          className={styles.button}
+          onClick={handlePing}
+          disabled={status !== 'running'}
+        >
+          📡 PING
+        </button>
+        <button
+          className={styles.button}
+          onClick={handleHealthCheck}
+          disabled={status !== 'running'}
+        >
+          🏥 Health Check
+        </button>
+        <button
+          className={styles.button}
+          onClick={handleGracefulTerminate}
+          disabled={status !== 'running'}
+        >
+          🛑 Graceful Stop
         </button>
       </div>
       <div className={styles.sendRow}>

@@ -54,11 +54,39 @@ export const useWorker = ({
             setStatus('running');
             break;
           case 'ERROR':
+            log.error('[Worker Error]', data.reason);
             terminate();
             setStatus('error');
             break;
-          default:
+          case 'WARNING':
+            log.warn('[Worker Warning]', data.reason);
             setStatus('warning');
+            break;
+          case 'PONG':
+            log.debug('[Worker] PONG received');
+            break;
+          case 'TERMINATED':
+            log.info('[Worker] Terminated gracefully');
+            setStatus('idle');
+            break;
+          case 'HEALTH':
+            log.debug(
+              '[Worker Health]',
+              data.status,
+              data.memory ? `Memory: ${data.memory} bytes` : '',
+            );
+            if (data.status === 'degraded') {
+              setStatus('warning');
+            }
+            break;
+          case 'PROGRESS':
+            log.debug(`[Worker Progress] ${data.percent}%`, data.message || '');
+            break;
+          case 'LOG':
+            const logMethod = log[data.level] || log.info;
+            logMethod('[Worker Log]', data.message, data.data || '');
+            break;
+          default:
             break;
         }
       });

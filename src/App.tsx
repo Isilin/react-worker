@@ -232,8 +232,10 @@ const App = () => {
         </section>
       </div>
       <footer className={styles.footer}>
-        Echo: Try PING or {'{"hello":"world"}'} | Reverse: Try "Hello" or ["a",
-        "b", "c"]
+        Test messages: PING (📡), Health Check (🏥), Graceful Stop (🛑) | Echo:
+        {'  '}
+        {'{"type":"ECHO","payload":"test"}'} | Reverse:{' '}
+        {'{"type":"ACTION","payload":"Hello"}'}
       </footer>
     </div>
   );
