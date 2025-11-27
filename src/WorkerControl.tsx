@@ -24,8 +24,14 @@ export const WorkerControl = ({
 
   const handleSend = () => {
     if (pendingMessage.trim() !== '') {
-      let parsed: Inbound = JSON.parse(pendingMessage.trim());
-      onSend(parsed);
+      try {
+        // Try to parse as JSON first
+        let parsed: Inbound = JSON.parse(pendingMessage.trim());
+        onSend(parsed);
+      } catch {
+        // If not valid JSON, treat as plain text and send as ECHO
+        onSend({ type: 'ECHO', payload: pendingMessage.trim() });
+      }
       setPendingMessage('');
     }
   };

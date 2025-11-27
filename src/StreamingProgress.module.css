@@ -1,0 +1,31 @@
+.container {
+  background: #16213e;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.barBackground {
+  background: #0f3460;
+  height: 25px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.barFill {
+  background: linear-gradient(90deg, #00d4ff, #0088ff);
+  height: 100%;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.label {
+  font-size: 12px;
+  opacity: 0.8;
+  color: #e0e0e0;
+}

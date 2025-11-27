@@ -1,0 +1,28 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 15px;
+  background: #0f3460;
+  border-radius: 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 11px;
+  opacity: 0.7;
+  color: #b0b0b0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #e0e0e0;
+}

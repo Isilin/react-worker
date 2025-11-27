@@ -16,13 +16,10 @@ const WORKER_ID = 'echo';
 sendReady(WORKER_ID);
 sendLog(WORKER_ID, 'info', 'Echo worker initialized');
 
-// Simulate health check
-setInterval(() => {
-  const memory = (
-    performance as unknown as { memory?: { usedJSHeapSize: number } }
-  ).memory?.usedJSHeapSize;
-  sendHealth(WORKER_ID, 'healthy', memory);
-}, 5000);
+// Send initial health check
+(async () => {
+  sendHealth(WORKER_ID, 'healthy');
+})();
 
 onMainMessage({
   onPing: () => {
@@ -30,7 +27,11 @@ onMainMessage({
     sendLog(WORKER_ID, 'debug', 'PING received, PONG sent');
   },
   onEcho: (payload) => {
-    sendEchoed(WORKER_ID, payload);
+    const t0 = performance.now();
+    // Echo is trivial, but we still measure
+    const out = payload;
+    const durationMs = performance.now() - t0;
+    sendEchoed(WORKER_ID, out, { durationMs });
     sendLog(WORKER_ID, 'debug', `Echoed: ${payload}`);
   },
   onTerminate: () => {
@@ -38,10 +39,7 @@ onMainMessage({
     sendTerminated(WORKER_ID);
     self.close();
   },
-  onHealthCheck: () => {
-    const memory = (
-      performance as unknown as { memory?: { usedJSHeapSize: number } }
-    ).memory?.usedJSHeapSize;
-    sendHealth(WORKER_ID, 'healthy', memory);
+  onHealthCheck: async () => {
+    sendHealth(WORKER_ID, 'healthy');
   },
 });
